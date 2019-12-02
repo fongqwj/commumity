@@ -11,7 +11,9 @@ import qwj.community.community.dto.User;
 import qwj.community.community.mapper.UserMapper;
 import qwj.community.community.provider.GithubProvider;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 /**
@@ -42,7 +44,8 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
-                           HttpServletRequest httpServletRequest){
+                           HttpServletRequest httpServletRequest,
+                           HttpServletResponse httpServletResponse){
 
         // 1.在页面上请求访问后，返回code
         // 2.再次传入code以及必传参数等，获得token
@@ -52,21 +55,21 @@ public class AuthorizeController {
         accesstokenDto.setClient_secret(clientSecret);
         accesstokenDto.setRedirect_uri(redirectUri);
         accesstokenDto.setState(state);
-
         String accessToken = githubProvider.getAccessToken(accesstokenDto);
 
         // 3.传入token，返回用户信息
         GithubUser githubUser = githubProvider.getUser(accessToken);
         if (githubUser != null) {
             User user = new User();
-            user.setToken(UUID.randomUUID().toString());
+            String token = UUID.randomUUID().toString();
+            user.setToken(token);
             user.setName(githubUser.getName());
             user.setAccountId(githubUser.getId().toString());
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(System.currentTimeMillis());
             userMapper.insert(user);
-            //登录成功
-            httpServletRequest.getSession().setAttribute("user",githubUser);
+            //登录成功，写入cookie
+            httpServletResponse.addCookie(new Cookie("token",token));
             return "redirect:/";
         }else {
             //登录失败
