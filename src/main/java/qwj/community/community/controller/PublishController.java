@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import qwj.community.community.common.LoginUtils;
 import qwj.community.community.dto.Question;
 import qwj.community.community.dto.User;
 import qwj.community.community.mapper.QuestionMapper;
@@ -30,8 +31,12 @@ public class PublishController {
     @Autowired
     private QuestionMapper questionMapper;
 
+    @Autowired
+    private LoginUtils loginUtils;
+
     @GetMapping("/publish")
-    public String publish(){
+    public String publish(HttpServletRequest httpServletRequest){
+        User user = loginUtils.getUser(httpServletRequest);
         return "publish";
     }
 
@@ -60,18 +65,8 @@ public class PublishController {
             return "publish";
         }
 
-        User user = null;
-        Cookie[] cookies = httpServletRequest.getCookies();
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                String token = cookie.getValue();
-                user = userMapper.findByToken(token);
-                if (user != null) {
-                    httpServletRequest.getSession().setAttribute("user",user);
-                }
-                break;
-            }
-        }
+        User user = loginUtils.getUser(httpServletRequest);
+
         if (user == null) {
             model.addAttribute("error","用户未登录");
             return "publish";
@@ -88,4 +83,5 @@ public class PublishController {
 
         return "redirect:/";
     }
+
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import qwj.community.community.common.LoginUtils;
 import qwj.community.community.dto.User;
 import qwj.community.community.mapper.UserMapper;
 
@@ -24,6 +25,9 @@ public class IndexController {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private LoginUtils loginUtils;
+
     @GetMapping("/hello")
     public String hello(@RequestParam(name = "name") String name, Model model){
         model.addAttribute("name",name);
@@ -32,18 +36,7 @@ public class IndexController {
 
     @GetMapping("/")
     public String index(HttpServletRequest httpServletRequest){
-        Cookie[] cookies = httpServletRequest.getCookies();
-        User user = null;
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                String token = cookie.getValue();
-                user = userMapper.findByToken(token);
-                if (user != null) {
-                    httpServletRequest.getSession().setAttribute("user",user);
-                }
-                break;
-            }
-        }
+        User user = loginUtils.getUser(httpServletRequest);
         if (user == null) {
             httpServletRequest.getSession().setAttribute("user",null);
         }
