@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import qwj.community.community.common.LoginUtils;
-import qwj.community.community.dto.Question;
-import qwj.community.community.dto.User;
+import qwj.community.community.model.Question;
+import qwj.community.community.model.User;
 import qwj.community.community.mapper.QuestionMapper;
 import qwj.community.community.mapper.UserMapper;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**

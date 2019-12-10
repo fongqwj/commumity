@@ -2,7 +2,7 @@ package qwj.community.community.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import qwj.community.community.dto.User;
+import qwj.community.community.model.User;
 import qwj.community.community.mapper.UserMapper;
 
 import javax.servlet.http.Cookie;
@@ -24,14 +24,16 @@ public class LoginUtils {
     public User getUser(HttpServletRequest httpServletRequest) {
         User user = null;
         Cookie[] cookies = httpServletRequest.getCookies();
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                String token = cookie.getValue();
-                user = userMapper.findByToken(token);
-                if (user != null) {
-                    httpServletRequest.getSession().setAttribute("user",user);
+        if (cookies != null && cookies.length != 0){
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    String token = cookie.getValue();
+                    user = userMapper.findByToken(token);
+                    if (user != null) {
+                        httpServletRequest.getSession().setAttribute("user",user);
+                    }
+                    break;
                 }
-                break;
             }
         }
         if (user == null) {

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import qwj.community.community.dto.AccesstokenDto;
 import qwj.community.community.dto.GithubUser;
-import qwj.community.community.dto.User;
+import qwj.community.community.model.User;
 import qwj.community.community.mapper.UserMapper;
 import qwj.community.community.provider.GithubProvider;
 
@@ -68,6 +68,7 @@ public class AuthorizeController {
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(System.currentTimeMillis());
             user.setBio(githubUser.getBio());
+            user.setAvatarUrl(githubUser.getAvatar_url());
             userMapper.insert(user);
             //登录成功，写入cookie
             httpServletResponse.addCookie(new Cookie("token",token));

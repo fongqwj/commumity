@@ -2,7 +2,7 @@ package qwj.community.community.mapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import qwj.community.community.dto.Question;
+import qwj.community.community.model.Question;
 
 /**
  * @Project
