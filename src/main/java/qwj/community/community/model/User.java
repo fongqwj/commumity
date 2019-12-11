@@ -1,6 +1,9 @@
 package qwj.community.community.model;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.naming.Name;
 
 /**
  * @Project
