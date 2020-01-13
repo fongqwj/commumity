@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.expression.Lists;
+import qwj.community.community.dto.PaginationDto;
 import qwj.community.community.dto.QuestionDto;
 import qwj.community.community.mapper.QuestionMapper;
 import qwj.community.community.mapper.UserMapper;
@@ -29,9 +30,21 @@ public class QuestionService {
     @Autowired
     private QuestionMapper questionMapper;
 
-    public List<QuestionDto> list() {
+    public PaginationDto list(int page, int size) {
+        PaginationDto paginationDto = new PaginationDto();
+        //总条数
+        Integer totalCount = questionMapper.count();
+        paginationDto.setPagination(totalCount,page,size);
+        if (page < 1) {
+            page = 1;
+        }
+        if (page > paginationDto.getTotalPage()) {
+            page = paginationDto.getTotalPage();
+        }
+        Integer offset = size * (page - 1);
         ArrayList<QuestionDto> list = new ArrayList<>();
-        List<Question> questionList = questionMapper.getList();
+        List<Question> questionList = questionMapper.getList(offset,size);
+
         for (Question question : questionList) {
             QuestionDto questionDto = new QuestionDto();
             User user = userMapper.findById(question.getCreator());
@@ -39,6 +52,7 @@ public class QuestionService {
             questionDto.setUser(user);
             list.add(questionDto);
         }
-        return list;
+        paginationDto.setQuestions(list);
+        return paginationDto;
     }
 }

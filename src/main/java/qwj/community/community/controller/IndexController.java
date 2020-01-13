@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import qwj.community.community.common.LoginUtils;
+import qwj.community.community.dto.PaginationDto;
 import qwj.community.community.dto.QuestionDto;
 import qwj.community.community.model.Question;
 import qwj.community.community.model.User;
@@ -38,13 +39,16 @@ public class IndexController {
     }
 
     @GetMapping("/")
-    public String index(HttpServletRequest httpServletRequest,Model model){
+    public String index(HttpServletRequest httpServletRequest,Model model,
+                        @RequestParam(name = "page",defaultValue = "1") int page,
+                        @RequestParam(name = "size",defaultValue = "3") int size){
         User user = loginUtils.getUser(httpServletRequest);
         if (user == null) {
             httpServletRequest.getSession().setAttribute("user",null);
         }
-        List<QuestionDto> questionList = questionService.list();
-        model.addAttribute("questionList",questionList);
+        PaginationDto paginationDto = questionService.list(page,size);
+
+        model.addAttribute("paginationDto",paginationDto);
         return "index";
     }
 }

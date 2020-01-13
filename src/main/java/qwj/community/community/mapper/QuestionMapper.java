@@ -2,6 +2,7 @@ package qwj.community.community.mapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import qwj.community.community.model.Question;
 
@@ -21,6 +22,9 @@ public interface QuestionMapper {
             "values (#{title},#{description},#{gmtCreate},#{gmtModified},#{creator},#{commentCount},#{viewCount},#{likeCount},#{tag})")
     void insert(Question question);
 
-    @Select("select * from question")
-    List<Question> getList();
+    @Select("select * from question limit #{offset},#{size}")
+    List<Question> getList(@Param(value = "offset") int offset,@Param(value = "size") int size);
+
+    @Select("select count(id) from question")
+    Integer count();
 }
