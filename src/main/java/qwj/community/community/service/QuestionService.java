@@ -30,10 +30,21 @@ public class QuestionService {
     @Autowired
     private QuestionMapper questionMapper;
 
+    //主页列表
     public PaginationDto list(int page, int size) {
+        PaginationDto paginationDto = getPaginationDto(null,page, size);
+        return paginationDto;
+    }
+
+    private PaginationDto getPaginationDto(Integer userId, int page, int size) {
         PaginationDto paginationDto = new PaginationDto();
         //总条数
-        Integer totalCount = questionMapper.count();
+        Integer totalCount;
+        if (userId == null) {
+            totalCount = questionMapper.count();
+        }else {
+            totalCount = questionMapper.countByUserId(userId);
+        }
         paginationDto.setPagination(totalCount,page,size);
         if (page < 1) {
             page = 1;
@@ -42,8 +53,14 @@ public class QuestionService {
             page = paginationDto.getTotalPage();
         }
         Integer offset = size * (page - 1);
+
         ArrayList<QuestionDto> list = new ArrayList<>();
-        List<Question> questionList = questionMapper.getList(offset,size);
+        List<Question> questionList;
+        if (userId == null) {
+            questionList = questionMapper.getList(offset,size);
+        }else {
+            questionList = questionMapper.getListByUserId(userId,offset,size);
+        }
 
         for (Question question : questionList) {
             QuestionDto questionDto = new QuestionDto();
@@ -53,6 +70,12 @@ public class QuestionService {
             list.add(questionDto);
         }
         paginationDto.setQuestions(list);
+        return paginationDto;
+    }
+
+    //我的回复列表
+    public PaginationDto list(int id, int page, int size) {
+        PaginationDto paginationDto = getPaginationDto(id,page, size);
         return paginationDto;
     }
 }

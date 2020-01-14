@@ -29,16 +29,23 @@ public class PaginationDto {
     private Integer totalPage;
 
     public void setPagination(Integer totalCount, int page, int size) {
+
         if (totalCount % size == 0) {
             totalPage = totalCount / size;
         }else {
             totalPage = totalCount / size +1;
         }
+        //判断越界
+        if (page > totalPage) {
+            page = totalPage;
+        }
+        //判断越界
         if (page < 1) {
             page = 1;
         }
-        if (page > totalPage) {
-            page = totalPage;
+        //特殊处理
+        if (totalPage == 0) {
+            totalPage = 1;
         }
         this.page = page;
         pages.add(page);
@@ -69,7 +76,7 @@ public class PaginationDto {
             showFirstPage = true;
         }
         //是否显示最后一页
-        if (page == totalPage) {
+        if (page > (totalPage - 3)) {
             showEndPage = false;
         }else {
             showEndPage = true;
