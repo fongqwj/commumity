@@ -31,12 +31,14 @@ public class ProfileController {
     private LoginUtils loginUtils;
 
     @GetMapping("/profile/{action}")
-    public String profile(HttpServletRequest httpServletRequest,
+    public String profile(HttpServletRequest request,
                           @PathVariable(name = "action")String action,
                           Model model,
                           @RequestParam(name = "page",defaultValue = "1") int page,
                           @RequestParam(name = "size",defaultValue = "3") int size){
-        User user = loginUtils.getUser(httpServletRequest);
+
+        User user = (User) request.getSession().getAttribute("user");
+
         if (user == null) {
             return "index";
         }

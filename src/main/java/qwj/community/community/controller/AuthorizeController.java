@@ -72,6 +72,7 @@ public class AuthorizeController {
             userMapper.insert(user);
             //登录成功，写入cookie
             httpServletResponse.addCookie(new Cookie("token",token));
+            httpServletRequest.getSession().setAttribute("user",user);
             return "redirect:/";
         }else {
             //登录失败

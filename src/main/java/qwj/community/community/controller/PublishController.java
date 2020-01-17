@@ -25,9 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 public class PublishController {
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private QuestionMapper questionMapper;
 
     @Autowired
@@ -41,7 +38,7 @@ public class PublishController {
 
     @PostMapping("/publish")
     public String doPublish(
-        HttpServletRequest httpServletRequest,
+        HttpServletRequest request,
         @RequestParam(name = "title")String title,
         @RequestParam(name = "description")String description,
         @RequestParam(name = "tag")String tag,
@@ -64,7 +61,7 @@ public class PublishController {
             return "publish";
         }
 
-        User user = loginUtils.getUser(httpServletRequest);
+        User user = (User) request.getSession().getAttribute("user");
 
         if (user == null) {
             model.addAttribute("error","用户未登录");

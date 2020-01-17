@@ -42,10 +42,7 @@ public class IndexController {
     public String index(HttpServletRequest httpServletRequest,Model model,
                         @RequestParam(name = "page",defaultValue = "1") int page,
                         @RequestParam(name = "size",defaultValue = "3") int size){
-        User user = loginUtils.getUser(httpServletRequest);
-        if (user == null) {
-            httpServletRequest.getSession().setAttribute("user",null);
-        }
+
         PaginationDto paginationDto = questionService.list(page,size);
 
         model.addAttribute("paginationDto",paginationDto);
