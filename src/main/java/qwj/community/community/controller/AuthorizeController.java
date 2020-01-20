@@ -10,6 +10,7 @@ import qwj.community.community.dto.GithubUser;
 import qwj.community.community.model.User;
 import qwj.community.community.mapper.UserMapper;
 import qwj.community.community.provider.GithubProvider;
+import qwj.community.community.service.UserService;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,9 @@ public class AuthorizeController {
     @Value("${github.redirect.uri}")
     private String redirectUri;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
@@ -65,11 +69,9 @@ public class AuthorizeController {
             user.setToken(token);
             user.setName(githubUser.getName());
             user.setAccountId(githubUser.getId().toString());
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(System.currentTimeMillis());
             user.setBio(githubUser.getBio());
             user.setAvatarUrl(githubUser.getAvatarUrl());
-            userMapper.insert(user);
+            userService.createOrUpdate(user);
             //登录成功，写入cookie
             httpServletResponse.addCookie(new Cookie("token",token));
             httpServletRequest.getSession().setAttribute("user",user);
@@ -78,5 +80,17 @@ public class AuthorizeController {
             //登录失败
             return "redirect:/";
         }
+    }
+
+    @GetMapping("/signOut")
+    public String signOut(
+            HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse){
+        httpServletRequest.getSession().removeAttribute("user");
+        Cookie token = new Cookie("token", null);
+        token.setMaxAge(0);
+        httpServletResponse.addCookie(token);
+
+        return "redirect:/";
     }
 }
